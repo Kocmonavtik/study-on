@@ -20,6 +20,7 @@
 .phpunit.result.cache
 ###< phpunit/phpunit ###
 .idea
+local.mk
 
 ###> squizlabs/php_codesniffer ###
 /.phpcs-cache
