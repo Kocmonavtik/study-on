@@ -3,13 +3,13 @@
 {% block title %}Course index{% endblock %}
 
 {% block body %}
-    <h1>Course index</h1>
+    <h1 class="mt-5">Course index</h1>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Code</th>
+                <!--<th>Id</th>
+                <th>Code</th>-->
                 <th>Title</th>
                 <th>Description</th>
                 <th>actions</th>
@@ -18,13 +18,13 @@
         <tbody>
         {% for course in courses %}
             <tr>
-                <td>{{ course.id }}</td>
-                <td>{{ course.code }}</td>
+                <!--<td>{{ course.id }}</td>
+                <td>{{ course.code }}</td>-->
                 <td>{{ course.title }}</td>
                 <td>{{ course.description }}</td>
                 <td>
-                    <a href="{{ path('app_course_show', {'id': course.id}) }}">show</a>
-                    <a href="{{ path('app_course_edit', {'id': course.id}) }}">edit</a>
+                    <a class="btn btn-success" href="{{ path('app_course_show', {'id': course.id}) }}">show</a>
+                    <!--<a class="btn btn-success" href="{{ path('app_course_edit', {'id': course.id}) }}">edit</a>-->
                 </td>
             </tr>
         {% else %}
@@ -35,5 +35,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_course_new') }}">Create new</a>
+    <a class="btn btn-warning" href="{{ path('app_course_new') }}">Create new</a>
 {% endblock %}
