@@ -1,11 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Lesson{% endblock %}
+{% block title %}Создание нового урока на курсе "{{course.title}}"{% endblock %}
 
 {% block body %}
-    <h1>Create new Lesson</h1>
-
-    {{ include('lesson/_form.html.twig') }}
-
-    <a href="{{ path('app_course_show', {'id': course.id}) }}">back to list</a>
+    <div class="container p-2 mt-5">
+        <h1>Создание нового урока на курсе "{{course.title}}"</h1>
+    </div>
+    {{ include('lesson/_form.html.twig', {'button_label': 'Сохранить'}) }}
+    <div class="container p-2">
+        <a class="btn btn-success" href="{{ path('app_course_show', {'id': course.id}) }}">Вернуться</a>
+    </div>
 {% endblock %}
