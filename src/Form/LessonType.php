@@ -32,7 +32,7 @@ class LessonType extends AbstractType
             ->add('title')
             ->add('content')
             ->add('serial_number')
-            ->add('course_id')
+            ->add('course')
         ;*/
         $builder
             ->add('title', TextType::class, [
@@ -58,8 +58,8 @@ class LessonType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('course_id', HiddenType::class);
-        $builder->get('course_id')
+            ->add('course', HiddenType::class);
+        $builder->get('course')
             ->addModelTransformer($this->transformer);
     }
 

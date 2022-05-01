@@ -32,7 +32,7 @@ class LessonController extends AbstractController
     public function new(Request $request, LessonRepository $lessonRepository, Course $course): Response
     {
         $lesson = new Lesson();
-        $lesson->setCourseId($course);
+        $lesson->setCourse($course);
         $form = $this->createForm(LessonType::class, $lesson);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -81,7 +81,7 @@ class LessonController extends AbstractController
      */
     public function delete(Request $request, Lesson $lesson, LessonRepository $lessonRepository): Response
     {
-        $course = $lesson->getCourseId()->getId();
+        $course = $lesson->getCourse()->getId();
         if ($this->isCsrfTokenValid('delete' . $lesson->getId(), $request->request->get('_token'))) {
             $lessonRepository->remove($lesson);
         }

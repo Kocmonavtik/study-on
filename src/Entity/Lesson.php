@@ -22,21 +22,24 @@ class Lesson
      * @ORM\ManyToOne(targetEntity=Course::class, inversedBy="lessons", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
-    private $course_id;
+    private $course;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $title;
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\NotBlank()
      */
     private $content;
 
     /**
      * @ORM\Column(type="integer")
      * @Assert\Range(min="0", max="10000", notInRangeMessage="No more than 10000 lessons")
+     * @Assert\NotBlank()
      */
     private $serial_number;
 
@@ -45,14 +48,14 @@ class Lesson
         return $this->id;
     }
 
-    public function getCourseId(): ?Course
+    public function getCourse(): ?Course
     {
-        return $this->course_id;
+        return $this->course;
     }
 
-    public function setCourseId(?Course $course_id): self
+    public function setCourse(?Course $course): self
     {
-        $this->course_id = $course_id;
+        $this->course = $course;
 
         return $this;
     }

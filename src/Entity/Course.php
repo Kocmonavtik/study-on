@@ -29,6 +29,7 @@ class Course
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $title;
 
@@ -38,7 +39,8 @@ class Course
     private $description;
 
     /**
-     * @ORM\OneToMany(targetEntity=Lesson::class, mappedBy="course_id", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Lesson::class, mappedBy="course", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OrderBy({"serial_number" = "ASC"})
      */
     private $lessons;
 
@@ -100,7 +102,7 @@ class Course
     {
         if (!$this->lessons->contains($lesson)) {
             $this->lessons[] = $lesson;
-            $lesson->setCourseId($this);
+            $lesson->setCourse($this);
         }
 
         return $this;
@@ -110,8 +112,8 @@ class Course
     {
         if ($this->lessons->removeElement($lesson)) {
             // set the owning side to null (unless already changed)
-            if ($lesson->getCourseId() === $this) {
-                $lesson->setCourseId(null);
+            if ($lesson->getCourse() === $this) {
+                $lesson->setCourse(null);
             }
         }
 

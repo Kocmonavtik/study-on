@@ -13,6 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Range;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class CourseType extends AbstractType
 {
@@ -31,6 +32,10 @@ class CourseType extends AbstractType
                     new Length([
                         'max' => 255,
                         'maxMessage' => 'Код должен иметь не больше 255 символов']),
+                    new Regex([
+                        'pattern' => '/^[a-zA-Z]+$/',
+                        'message' => 'Код должен содержить только буквенные значения',
+                    ]),
                 ],
             ])
             ->add('title', TextType::class, [
