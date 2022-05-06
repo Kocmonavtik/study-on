@@ -38,7 +38,6 @@ class LessonType extends AbstractType
             ->add('title', TextType::class, [
                 'label' => 'Название урока',
                 'constraints' => [
-                    new NotBlank(['message' => 'Поле не должно быть пустым']),
                     new Length([
                         'max' => 255,
                         'maxMessage' => 'Название урока должно иметь не больше 255 символов']),
@@ -50,12 +49,6 @@ class LessonType extends AbstractType
             ->add('serial_number', NumberType::class, [
                 'label' => 'Номер урока',
                 'constraints' => [
-                    new NotBlank(['message' => 'Поле не должно быть пустым']),
-                    new Range([
-                        'notInRangeMessage' => 'Значение поля должно быть в диапазоне от {{ min }} до {{ max }}',
-                        'min' => 1,
-                        'max' => 10000
-                    ]),
                 ],
             ])
             ->add('course', HiddenType::class);

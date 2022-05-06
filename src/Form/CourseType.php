@@ -28,7 +28,6 @@ class CourseType extends AbstractType
             ->add('code', TextType::class, [
                 'label' => 'Символьный код',
                 'constraints' => [
-                    new NotBlank(['message' => 'Поле не должно быть пустым']),
                     new Length([
                         'max' => 255,
                         'maxMessage' => 'Код должен иметь не больше 255 символов']),
@@ -41,7 +40,6 @@ class CourseType extends AbstractType
             ->add('title', TextType::class, [
                 'label' => 'Название курса',
                 'constraints' => [
-                    new NotBlank(['message' => 'Поле не должно быть пустым']),
                     new Length([
                         'max' => 255,
                         'maxMessage' => 'Название курса должно иметь не больше 255 символов']),
@@ -50,7 +48,6 @@ class CourseType extends AbstractType
             ->add('description', TextType::class, [
                 'label' => 'Описание курса',
                 'constraints' => [
-                    new NotBlank(['message' => 'Поле не должно быть пустым']),
                     new Length([
                         'max' => 1000,
                         'maxMessage' => 'Описание курса должно иметь не больше 1000 символов']),

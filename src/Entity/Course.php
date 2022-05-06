@@ -24,6 +24,7 @@ class Course
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $code;
 
@@ -35,6 +36,7 @@ class Course
 
     /**
      * @ORM\Column(type="string", length=1000, nullable=true)
+     * @Assert\NotBlank()
      */
     private $description;
 

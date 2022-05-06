@@ -38,7 +38,7 @@ class Lesson
 
     /**
      * @ORM\Column(type="integer")
-     * @Assert\Range(min="0", max="10000", notInRangeMessage="No more than 10000 lessons")
+     * @Assert\Range(min="1", max="10000", notInRangeMessage="Значение должно быть от 1 до 1000")
      * @Assert\NotBlank()
      */
     private $serial_number;
