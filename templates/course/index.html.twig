@@ -32,7 +32,8 @@
         {% endfor %}
         </tbody>
     </table>
-
-    <a class="btn btn-warning create_course" href="{{ path('app_course_new') }}">Создать</a>
+    {% if is_granted('ROLE_SUPER_ADMIN') %}
+        <a class="btn btn-warning create_course" href="{{ path('app_course_new') }}">Создать</a>
+    {% endif %}
 </div>
 {% endblock %}

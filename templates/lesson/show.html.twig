@@ -9,7 +9,9 @@
 
     <p class="lesson_content"> {{ lesson.content }} </p>
     <a class="btn btn-success" href="{{path('app_course_show', {'id': lesson.course.id}) }}">Вернуться</a>
-    <a class="btn btn-success"  href="{{ path('app_lesson_edit', {'id': lesson.id}) }}">Редактировать</a>
-    {{ include('lesson/_delete_form.html.twig') }}
+    {% if is_granted('ROLE_SUPER_ADMIN') %}
+        <a class="btn btn-success"  href="{{ path('app_lesson_edit', {'id': lesson.id}) }}">Редактировать</a>
+        {{ include('lesson/_delete_form.html.twig') }}
+    {% endif %}
 </div>
 {% endblock %}

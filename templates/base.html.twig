@@ -17,6 +17,44 @@
         {% endblock %}
     </head>
     <body>
+   {# <header class="p-3 bg-dark text-white">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a href="{{ path('app_course_index') }}" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                    <img src="{{ asset('upload/LogoSite.jpg') }}" class="bi me-2" width="50" height="50" role="img" aria-label="study" alt="">
+                    <h3> Study On</h3>
+                </a>
+                <div class="text-end">
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+
+                        <a type="button" class="btn btn-warning" href="#">Профиль</a>
+
+                        <a type="button" class="btn btn-danger" href="{{ path('app_logout') }}">Выход</a>
+                    {% else %}
+                        <a type="button" class="btn btn-outline-light me-2" href="{{ path('app_login') }}">Авторизация</a>
+                        <a type="button" class="btn btn-warning" href="{{ path('app_register') }}">Регистрация</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>#}
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom p-3 bg-dark text-white">
+        <a href="{{ path('app_course_index') }}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+            <img src="{{ asset('upload/LogoSite.jpg') }}" class="bi me-2" width="50" height="50" role="img" aria-label="study" alt="">
+            <h3 class="text-white"> Study On</h3>
+        </a>
+
+        <ul class="nav nav-pills">
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <li class="nav-item"> <a type="button" class="btn btn-warning" href="#">Профиль</a></li>
+                <li class="nav-item">   <a type="button" class="btn btn-danger" href="{{ path('app_logout') }}">Выход</a></li>
+
+            {% else %}
+            <li class="nav-item"><a type="button" class="btn btn-outline-light me-2" href="{{ path('app_login') }}">Авторизация</a></li>
+            <li class="nav-item"><a type="button" class="btn btn-warning" href="{{ path('app_register') }}">Регистрация</a></li>
+            {% endif %}
+        </ul>
+    </header>
         {% block body %}{% endblock %}
     </body>
 </html>
