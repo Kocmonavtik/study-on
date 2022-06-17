@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Профиль StudyOn{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-6 d-flex flex-column align-items-center">
+            <h1>Профиль</h1>
+            <div class="alert alert-dark">
+                <p>Email: {{ userDto.username }}</p>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <p>Роль:
+                    Администратор
+                </p>
+                    {% else %}
+                        <p>Роль:
+                            Пользователь
+                        </p>
+                {% endif %}
+                <p>Баланс: {{ userDto.balance }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
