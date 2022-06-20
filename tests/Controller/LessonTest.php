@@ -8,11 +8,22 @@ use App\DataFixtures\AppFixtures;
 use App\Entity\Course;
 use App\Entity\Lesson;
 use App\Tests\AbstractTest;
+use App\Tests\Authorization\Auth;
 use Doctrine\Persistence\ObjectManager;
+use JMS\Serializer\SerializerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 class LessonTest extends AbstractTest
 {
+    /** @var SerializerInterface */
+    private $serializer;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->serializer = self::$container->get(SerializerInterface::class);
+    }
+
     protected function getFixtures(): array
     {
         return [AppFixtures::class];
@@ -31,11 +42,56 @@ class LessonTest extends AbstractTest
     {
         yield['lessons/new'];
     }
+    private function adminUser()
+    {
+        $auth = new Auth();
+        $auth->setSerializer($this->serializer);
+        $data = [
+            'username' => 'adminuser@gmail.com',
+            'password' => '123456'
+        ];
+        $requestData = $this->serializer->serialize($data, 'json');
+        $crawler = $auth->auth($requestData);
+        return $crawler;
+    }
+    /**
+     * @group testPermissionsUserLesson
+     */
+    public function testPermissionsUserLesson(): void //каким образом проверить
+    {
+        $auth = new Auth();
+        $auth->setSerializer($this->serializer);
+        $data = [
+            'username' => 'succUser@gmail.com',
+            'password' => '123456'
+        ];
+        $requestData = $this->serializer->serialize($data, 'json');
+        $crawler = $auth->auth($requestData);
+
+        $client = AbstractTest::getClient();
+        $courseRepository = self::getEntityManager()->getRepository(Course::class);
+        $courses = $courseRepository->findAll();
+        foreach ($courses as $course) {
+            foreach ($course->getLessons() as $lesson) {
+                $client->request('GET', '/lessons/' . $lesson->getId());
+                $this->assertResponseOk();
+
+                $client->request('GET', '/lessons/' . $lesson->getId() . '/edit');
+                $this->assertResponseOk();
+
+                $client->request('POST', '/lessons/' . $lesson->getId() . '/edit');
+                $this->assertResponseOk();
+            }
+            $client->request('GET', '/lessons/new/' . $course->getId());
+            $this->assertResponseOk();
+        }
+    }
     /**
      * @group testResponseLessonPages
      */
     public function testResponseLessonPages(): void
     {
+        $crawler = $this->adminUser();
         $client = AbstractTest::getClient();
         $courseRepository = self::getEntityManager()->getRepository(Course::class);
         $courses = $courseRepository->findAll();
@@ -60,6 +116,7 @@ class LessonTest extends AbstractTest
      */
     public function testCreateLesson(): void
     {
+        $crawler = $this->adminUser();
         //Стартовая страница
         $client = AbstractTest::getClient();
         $url = '/courses/';
@@ -100,6 +157,7 @@ class LessonTest extends AbstractTest
      */
     public function testDeleteLesson(): void
     {
+        $crawler = $this->adminUser();
         $client = AbstractTest::getClient();
         $url = '/courses/';
 
@@ -138,6 +196,7 @@ class LessonTest extends AbstractTest
      */
     public function testEditLesson(): void
     {
+        $crawler = $this->adminUser();
         $client = AbstractTest::getClient();
         $url = '/courses/';
 
@@ -182,6 +241,7 @@ class LessonTest extends AbstractTest
      */
     public function testUrlSuccess($url): void
     {
+        $crawler = $this->adminUser();
         $client = AbstractTest::getClient();
         $client->request('GET', $url);
         $this->assertResponseOk();
@@ -192,6 +252,7 @@ class LessonTest extends AbstractTest
      */
     public function testUrlNotFound($url): void
     {
+        $crawler = $this->adminUser();
         $client = AbstractTest::getClient();
         $client->request('GET', $url);
         $this->assertResponseNotFound();
@@ -202,6 +263,7 @@ class LessonTest extends AbstractTest
      */
     public function testUrlInternalServerError($url)
     {
+        $crawler = $this->adminUser();
         $client = AbstractTest::getClient();
         $client->request('GET', $url);
         $this->assertResponseCode(500);
@@ -211,6 +273,7 @@ class LessonTest extends AbstractTest
      */
     public function testCreateBlankFieldLesson(): void
     {
+        $crawler = $this->adminUser();
         //Стартовая страница
         $client = AbstractTest::getClient();
         $url = '/courses/';
@@ -266,6 +329,7 @@ class LessonTest extends AbstractTest
      */
     public function testCreateInvalidLengthLesson(): void
     {
+        $crawler = $this->adminUser();
         //Стартовая страница
         $client = AbstractTest::getClient();
         $url = '/courses/';
@@ -312,6 +376,7 @@ class LessonTest extends AbstractTest
      */
     public function testDeleteLessonAfterDeleteCourse(): void
     {
+        $crawler = $this->adminUser();
         $client = self::getClient();
 
         $crawler = $client->request('GET', '/courses/');

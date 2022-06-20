@@ -5,7 +5,7 @@
 {% block body %}
 <form method="post">
     {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        <div class="alert alert-danger" id="errors">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
 
     {% if app.user %}
@@ -37,7 +37,7 @@
 
 
     <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
+        Войти
     </button>
 </form>
 {% endblock %}

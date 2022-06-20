@@ -24,9 +24,6 @@ class SecurityController extends AbstractController
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // if ($this->getUser()) {
-        //     return $this->redirectToRoute('target_path');
-        // }
         if ($this->getUser()) {
             return $this->redirectToRoute('app_course_index');
         }
@@ -65,15 +62,15 @@ class SecurityController extends AbstractController
         $form = $this->createForm(RegistrationFormType::class, $userDto);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            try {
+            //try {
                 $userDto = $billingClient->register($userDto);
                 $user = Users::fromDto($userDto, $decodeJwt);
-            } catch (BillingUnavailableException $e) {
-                return $this->render('registration/register.html.twig', [
-                    'registrationForm' => $form->createView(),
-                    'errors' => $e->getMessage(),
-                ]);
-            }
+            //} catch (BillingUnavailableException $e) {
+             //   return $this->render('registration/register.html.twig', [
+             //       'registrationForm' => $form->createView(),
+             //       'errors' => $e->getMessage(),
+             //   ]);
+            //}
             return $userAuthenticator->authenticateUser(
                 $user,
                 $billingAuthenticator,
