@@ -39,7 +39,7 @@ class BillingClientMock extends BillingClient
             $dto = $this->serializer->deserialize($json, UserDto::class, 'json');
             return $dto;
         }
-        throw new BillingUnavailableException('Неверные учетные данные');
+        throw new BillingUnavailableException('Invalid credentials.');
     }
     private function generateToken(string $role, string $username): string
     {

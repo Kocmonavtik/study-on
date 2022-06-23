@@ -53,7 +53,6 @@ class SecurityController extends AbstractController
         BillingClient $billingClient,
         DecodeJwt $decodeJwt,
         BillingAuthenticator $billingAuthenticator
-
     ) {
         if ($this->getUser()) {
             return new RedirectResponse($this->generateUrl('app_course_index'));
@@ -62,15 +61,15 @@ class SecurityController extends AbstractController
         $form = $this->createForm(RegistrationFormType::class, $userDto);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            //try {
+            try {
                 $userDto = $billingClient->register($userDto);
                 $user = Users::fromDto($userDto, $decodeJwt);
-            //} catch (BillingUnavailableException $e) {
-             //   return $this->render('registration/register.html.twig', [
-             //       'registrationForm' => $form->createView(),
-             //       'errors' => $e->getMessage(),
-             //   ]);
-            //}
+            } catch (BillingUnavailableException $e) {
+                return $this->render('registration/register.html.twig', [
+                    'registrationForm' => $form->createView(),
+                    'errors' => $e->getMessage(),
+                ]);
+            }
             return $userAuthenticator->authenticateUser(
                 $user,
                 $billingAuthenticator,

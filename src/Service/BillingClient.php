@@ -9,6 +9,7 @@ use App\Model\UserDto;
 use App\Security\Users;
 use JMS\Serializer\SerializerInterface;
 
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
 
 class BillingClient
@@ -45,7 +46,7 @@ class BillingClient
         $result = json_decode($resultJson, true);
         if (isset($result['code'])) {
             if ($result['code'] === 401) {
-                throw new BillingUnavailableException('Неверные учетные данные');
+                throw new UserNotFoundException('Неверные учетные данные');
             }
         }
         $userDto = $this->serializer->deserialize($resultJson, UserDto::class, 'json');
@@ -74,8 +75,9 @@ class BillingClient
         curl_close($ch);
 
         $result = json_decode($resultJson, true);
-        if (isset($result['code'])) {
-            throw new BillingUnavailableException($result['message']);
+        //var_dump($result);
+        if (isset($result['error'])) {
+            throw new BillingUnavailableException($result['error']);
         }
         return $this->serializer->deserialize($resultJson, UserDto::class, 'json');
     }

@@ -36,7 +36,14 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
-
+        - { path: ^/profile, roles: [IS_AUTHENTICATED_FULLY] }
+        - { path: ^/courses/new, roles: [IS_AUTHENTICATED_FULLY] }
+        - { path: ^/courses/\d+/edit, roles: [IS_AUTHENTICATED_FULLY] }
+        - { path: ^/courses/\d+, method: [POST], roles: [IS_AUTHENTICATED_FULLY] }
+        - { path: ^/lesson/new/\d+, roles: [IS_AUTHENTICATED_FULLY] }
+        - { path: ^/lesson/new/\d+, roles: [IS_AUTHENTICATED_FULLY] }
+        - { path: ^/lesson/\d+/edit, roles: [IS_AUTHENTICATED_FULLY] }
+        - { path: ^/lesson/\d+, method: [POST], roles: [IS_AUTHENTICATED_FULLY] }
 when@test:
     security:
         password_hashers:

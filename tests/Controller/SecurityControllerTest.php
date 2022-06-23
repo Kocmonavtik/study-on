@@ -57,7 +57,7 @@ class SecurityControllerTest extends AbstractTest
 
         $data = [
             'username' => 'succUser@gmail.com',
-            'password' => '123456'
+            'password' => '12345678'
         ];
         $requestData = $this->serializer->serialize($data, 'json');
 
@@ -72,13 +72,12 @@ class SecurityControllerTest extends AbstractTest
         $form['password'] = $requestData['password'];
         $client->submit($form);
 
-
         self::assertFalse($client->getResponse()->isRedirect('/courses/'));
-        //$crawler = $client->followRedirect();
+        $crawler = $client->followRedirect();
 
-
-        //$error = $crawler->filter('#errors');
-        //self::assertEquals('Неверные учетные данные', $error->text());
+        // Проверяем, что пояивлась ошибка
+        $error = $crawler->filter('#errors');
+        self::assertEquals('Invalid credentials.', $error->text());
 
 
     }

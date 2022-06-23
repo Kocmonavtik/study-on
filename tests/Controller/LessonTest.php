@@ -37,11 +37,12 @@ class LessonTest extends AbstractTest
     public function urlNotFound()
     {
         yield['/lessons/'];
-    }
-    public function urlInternalServerError()
-    {
         yield['lessons/new'];
     }
+   /* public function urlInternalServerError()
+    {
+        yield['lessons/new'];
+    }*/
     private function adminUser()
     {
         $auth = new Auth();
@@ -77,13 +78,22 @@ class LessonTest extends AbstractTest
                 $this->assertResponseOk();
 
                 $client->request('GET', '/lessons/' . $lesson->getId() . '/edit');
+                $this->assertResponseRedirect();
+                $client->followRedirect();
                 $this->assertResponseOk();
+                self::assertEquals('/courses/', $client->getRequest()->getPathInfo());
 
                 $client->request('POST', '/lessons/' . $lesson->getId() . '/edit');
+                $this->assertResponseRedirect();
+                $client->followRedirect();
                 $this->assertResponseOk();
+                self::assertEquals('/courses/', $client->getRequest()->getPathInfo());
             }
             $client->request('GET', '/lessons/new/' . $course->getId());
+            $this->assertResponseRedirect();
+            $client->followRedirect();
             $this->assertResponseOk();
+            self::assertEquals('/courses/', $client->getRequest()->getPathInfo());
         }
     }
     /**
@@ -257,17 +267,17 @@ class LessonTest extends AbstractTest
         $client->request('GET', $url);
         $this->assertResponseNotFound();
     }
-    /**
+   /* /**
      * @group testUrlInternalServerErrorLesson
      * @dataProvider urlInternalServerError
      */
-    public function testUrlInternalServerError($url)
+   /* public function testUrlInternalServerError($url)
     {
         $crawler = $this->adminUser();
         $client = AbstractTest::getClient();
         $client->request('GET', $url);
-        $this->assertResponseCode(500);
-    }
+        $this->assertResponseCode(404);
+    }*/
     /**
      * @group testCreateBlankFieldsLesson
      */

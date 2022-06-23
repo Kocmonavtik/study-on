@@ -2,6 +2,7 @@
 
 namespace App\Security;
 
+use App\Exception\BillingUnavailableException;
 use App\Service\BillingClient;
 use App\Service\DecodeJwt;
 use JMS\Serializer\SerializerInterface;
@@ -10,9 +11,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\CustomCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
@@ -56,16 +59,22 @@ class BillingAuthenticator extends AbstractLoginFormAuthenticator
 
         $request->getSession()->set(Security::LAST_USERNAME, $data['username']);
 
-        return new SelfValidatingPassport(
+        $passport = new SelfValidatingPassport(
             new UserBadge($data['username'], function () use ($creditials) {
-                $userDto = $this->billingClient->loginUser($creditials);
-                $user = Users::fromDto($userDto, $this->decodeJwt);
+                try {
+                    $userDto = $this->billingClient->loginUser($creditials);
+                    $user = Users::fromDto($userDto, $this->decodeJwt);
+                } catch (BillingUnavailableException $exception) {
+                    throw new CustomUserMessageAuthenticationException($exception->getMessage());
+                }
                 return $user;
             }),
             [
                 new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
+                new RememberMeBadge()
             ]
         );
+        return $passport;
        /* return new Passport(
             new UserBadge($email),
             new CustomCredentials()

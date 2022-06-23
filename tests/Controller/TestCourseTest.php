@@ -41,12 +41,13 @@ class TestCourseTest extends AbstractTest
     {
         yield ['/courses/0'];
         yield ['/abstractUrl/'];
-    }
-
-    public function urlInternalServerError()
-    {
         yield ['courses/lol'];
     }
+
+   /* public function urlInternalServerError()
+    {
+        yield ['courses/lol'];
+    }*/
 
     private function adminUser()
     {
@@ -64,7 +65,7 @@ class TestCourseTest extends AbstractTest
     /**
      * @group testPermissionsUserCourse
      */
-    public function testPermissionsUserCourse(): void //каким образом проверить
+    public function testPermissionsUserCourse(): void
     {
         $auth = new Auth();
         $auth->setSerializer($this->serializer);
@@ -83,22 +84,40 @@ class TestCourseTest extends AbstractTest
             $this->assertResponseOk();
 
             $client->request('GET', '/courses/' . $course->getId() . '/edit');
+            $this->assertResponseRedirect();
+            $client->followRedirect();
             $this->assertResponseOk();
+            self::assertEquals('/courses/', $client->getRequest()->getPathInfo());
 
             $client->request('GET', '/lessons/new/' . $course->getId());
+            $this->assertResponseRedirect();
+            $client->followRedirect();
             $this->assertResponseOk();
+            self::assertEquals('/courses/', $client->getRequest()->getPathInfo());
 
             $client->request('POST', '/courses/' . $course->getId() . '/edit');
+            $this->assertResponseRedirect();
+            $client->followRedirect();
             $this->assertResponseOk();
+            self::assertEquals('/courses/', $client->getRequest()->getPathInfo());
 
             $client->request('POST', '/lessons/new/' . $course->getId());
+            $this->assertResponseRedirect();
+            $client->followRedirect();
             $this->assertResponseOk();
+            self::assertEquals('/courses/', $client->getRequest()->getPathInfo());
         }
         $client->request('GET', '/courses/new');
+        $this->assertResponseRedirect();
+        $client->followRedirect();
         $this->assertResponseOk();
+        self::assertEquals('/courses/', $client->getRequest()->getPathInfo());
 
         $client->request('POST', '/courses/new');
+        $this->assertResponseRedirect();
+        $client->followRedirect();
         $this->assertResponseOk();
+        self::assertEquals('/courses/', $client->getRequest()->getPathInfo());
     }
     /**
      * @group testResponsePages
@@ -265,17 +284,17 @@ class TestCourseTest extends AbstractTest
         $client->request('GET', $url);
         $this->assertResponseNotFound();
     }
-    /**
+  /*  /**
      * @group testUrlInternalServerError
      * @dataProvider urlInternalServerError
      */
-    public function testUrlInternalServerError($url)
+   /* public function testUrlInternalServerError($url)
     {
         $crawler = $this->adminUser();
         $client = AbstractTest::getClient();
         $client->request('GET', $url);
         $this->assertResponseCode(500);
-    }
+    }*/
     /**
      * @group testCountCourses
      */

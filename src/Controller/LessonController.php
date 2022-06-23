@@ -19,10 +19,12 @@ class LessonController extends AbstractController
 {
     /**
      * @Route("/new/{course}", name="app_lesson_new", methods={"GET", "POST"})
-     * @IsGranted("ROLE_SUPER_ADMIN", statusCode=403 , message="Нет доступа!")
      */
     public function new(Request $request, LessonRepository $lessonRepository, Course $course): Response
     {
+        if (!in_array('ROLE_SUPER_ADMIN', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_course_index');
+        }
         $lesson = new Lesson();
         $lesson->setCourse($course);
         $form = $this->createForm(LessonType::class, $lesson);
@@ -51,10 +53,12 @@ class LessonController extends AbstractController
 
     /**
      * @Route("/{id}/edit", name="app_lesson_edit", methods={"GET", "POST"})
-     * @IsGranted("ROLE_SUPER_ADMIN", statusCode=403 , message="Нет доступа!")
      */
     public function edit(Request $request, Lesson $lesson, LessonRepository $lessonRepository): Response
     {
+        if (!in_array('ROLE_SUPER_ADMIN', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_course_index');
+        }
         $form = $this->createForm(LessonType::class, $lesson);
         $form->handleRequest($request);
 
@@ -71,10 +75,12 @@ class LessonController extends AbstractController
 
     /**
      * @Route("/{id}", name="app_lesson_delete", methods={"POST"})
-     * @IsGranted("ROLE_SUPER_ADMIN", statusCode=403 , message="Нет доступа!")
      */
     public function delete(Request $request, Lesson $lesson, LessonRepository $lessonRepository): Response
     {
+        if (!in_array('ROLE_SUPER_ADMIN', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_course_index');
+        }
         $course = $lesson->getCourse()->getId();
         if ($this->isCsrfTokenValid('delete' . $lesson->getId(), $request->request->get('_token'))) {
             $lessonRepository->remove($lesson);
