@@ -6,6 +6,7 @@ use App\Entity\Course;
 use App\Entity\Lesson;
 use App\Form\LessonType;
 use App\Repository\LessonRepository;
+use App\Service\BillingClient;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,11 +45,28 @@ class LessonController extends AbstractController
     /**
      * @Route("/{id}", name="app_lesson_show", methods={"GET"})
      */
-    public function show(Lesson $lesson): Response
+    public function show(Lesson $lesson, BillingClient $billingClient): Response
     {
-        return $this->render('lesson/show.html.twig', [
-            'lesson' => $lesson,
-        ]);
+        $course = $lesson->getCourse();
+        $billingCourse = $billingClient->getCourseByCode($course->getCode());
+        if ($billingCourse['type'] === 'free') {
+            return $this->render('lesson/show.html.twig', [
+                'lesson' => $lesson
+            ]);
+        }
+        if(!$this->getUser()){
+            return $this->redirectToRoute('app_login');
+        }
+        $transaction = $billingClient->getTransactions(
+            ['course_code' => $course->getCode(), 'skip_expired' => true],
+            $this->getUser()
+        );
+        if($transaction){
+            return $this->render('lesson/show.html.twig', [
+                'lesson' => $lesson
+            ]);
+        }
+        throw new \Exception('Данны курс недоступен!');
     }
 
     /**

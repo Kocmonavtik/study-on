@@ -5,7 +5,9 @@
 {% block body %}
 <div class="container p-2 mt-5">
     <h1 class="mt-5">Список курсов</h1>
-
+    {% if error is defined %}
+        <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endif %}
     <table class="table">
         <thead>
             <tr>
@@ -13,18 +15,74 @@
                 <th>Code</th>-->
                 <th>Название</th>
                 <th>Описание</th>
+                <th></th>
+                <th>Действия</th>
               {#  <th>Действия</th>#}
             </tr>
         </thead>
         <tbody>
         {% for course in courses %}
             <tr>
-                <td>{{ course.title }}</td>
-                <td>{{ course.description }}</td>
-                <td>
+                <td>{{ course.course.title }}</td>
+                <td>{{ course.course.description }}</td>
+               {# <td>
                     <a class="btn btn-success open_course" href="{{ path('app_course_show', {'id': course.id}) }}">Открыть</a>
-                </td>
+                </td>#}
+                {% if course.billingInfo.type == 'free' %}
+                    <td></td>
+                    <td><a  class="btn btn-success open_course"
+                        href="{{ path('app_course_show', {'id': course.course.id}) }}">
+                        Перейти к курсу</a>
+                    </td>
+                {% elseif course.billingInfo.type == 'rent'%}
+                    {% if course.transaction %}
+                        <td>
+                            <div class="alert alert-info" role="alert">
+                                Арендован до {{ course.transaction.expires_at|date("d.m.Y") }}
+                            </div>
+                        </td>
+                        <td>
+                            <a  class="btn btn-success open_course"
+                                href="{{ path('app_course_show', {'id': course.course.id}) }}">
+                                Перейти к курсу
+                            </a>
+                        </td>
+                    {% else %}
+                        <td></td>
+                        <td>
+                            <a class="btn btn-success course-link"
+                               data-bs-toggle="modal"
+                               data-bs-target="#buyModal{{ course.course.id }}">
+                                Арендовать за {{ course.billingInfo.price }}
+                            </a>
+                        </td>
+                    {% endif %}
+                {% elseif course.billingInfo.type == 'buy'%}
+                        {% if course.transaction %}
+                            <td>
+                                <div class="alert alert-info">Куплен</div>
+                            </td>
+                            <td>
+                                <a
+                                    class="btn btn-primary course-link"
+                                    href="{{ path('app_course_show', {'id': course.course.id}) }}">
+                                    Перейти к курсу
+                                </a>
+                            </td>
+                        {% else %}
+                            <td></td>
+                            <td>
+                                <a
+                                    class="btn btn-success course-link"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#buyModal{{ course.course.id }}">
+                                    Купить за {{ course.billingInfo.price }}
+                                </a>
+                            </td>
+                        {% endif %}
+                {% endif %}
             </tr>
+            {% include 'course/modalBuy.html.twig' %}
         {% else %}
             <tr>
                 <td colspan="5">Записей не найдено</td>

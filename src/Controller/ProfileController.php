@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use App\Repository\CourseRepository;
 
 /**
  * @Route("/profile")
@@ -54,6 +55,19 @@ class ProfileController extends AbstractController
         $userDto = $this->serializer->deserialize($response, UserDto::class, 'json');
         return $this->render('profile/index.html.twig', [
             'userDto' => $userDto
+        ]);
+    }
+    /**
+     * @Route("/history", name="app_history")
+     */
+    public function history(BillingClient $billingClient, CourseRepository $courseRepository): Response
+    {
+        $transactions = $billingClient->getTransactions([], $this->getUser());
+        uasort($transactions, function ($a, $b) {
+            return $a['created_at'] <=> $b['created_at'];
+        });
+        return $this->render('profile/history.html.twig', [
+            'transactions' => $transactions
         ]);
     }
 }

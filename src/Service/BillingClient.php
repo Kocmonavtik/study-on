@@ -8,8 +8,9 @@ use App\Model\UserDto;
 
 use App\Security\Users;
 use JMS\Serializer\SerializerInterface;
-
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
+use Symfony\Component\HttpFoundation\Response;
+
 use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
 
 class BillingClient
@@ -105,5 +106,99 @@ class BillingClient
             throw new BillingUnavailableException($result['message']);
         }
         return $resultJson;
+    }
+    public function getCourses()
+    {
+        $defaults = array(
+            CURLOPT_URL => $this->url . '/api/v1/courses/',
+            CURLOPT_HTTPGET => true,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json'
+            ]
+        );
+        $ch = curl_init();
+        curl_setopt_array($ch, $defaults);
+        $resultJson = curl_exec($ch);
+        if ($resultJson === false) {
+            throw new BillingUnavailableException('Сервис временно недоступен');
+        }
+        curl_close($ch);
+        $result = json_decode($resultJson, true);
+        if (isset($result['code'])) {
+            throw new BillingUnavailableException($result['message']);
+        }
+        return $this->serializer->deserialize($resultJson, 'array', 'json');
+    }
+    public function getCourseByCode($courseCode)
+    {
+        $defaults = array(
+            CURLOPT_URL => $this->url . '/api/v1/courses/' . $courseCode,
+            CURLOPT_HTTPGET => true,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json'
+            ]
+        );
+        $ch = curl_init();
+        curl_setopt_array($ch, $defaults);
+        $resultJson = curl_exec($ch);
+        if ($resultJson === false) {
+            throw new BillingUnavailableException('Сервис временно недоступен');
+        }
+        curl_close($ch);
+        $result = json_decode($resultJson, true);
+        if (isset($result['errors'])) {
+            throw new BillingUnavailableException($result['errors']);
+        }
+        return $this->serializer->deserialize($resultJson, 'array', 'json');
+    }
+    public function getTransactions($filters, $user)
+    {
+        $defaults = array(
+            CURLOPT_URL => $this->url . '/api/v1/transactions/?' . http_build_query($filters),
+            CURLOPT_HTTPGET => true,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $user->getToken()
+            ]
+        );
+        $ch = curl_init();
+        curl_setopt_array($ch, $defaults);
+        $resultJson = curl_exec($ch);
+        if ($resultJson === false) {
+            throw new BillingUnavailableException('Сервис временно недоступен');
+        }
+        curl_close($ch);
+        $result = json_decode($resultJson, true);
+        if (isset($result['status_code'])) {
+            throw new BillingUnavailableException($result['message']);
+        }
+        return $this->serializer->deserialize($resultJson, 'array', 'json');
+    }
+    public function pay($courseCode, $user)
+    {
+        $defaults = array(
+            CURLOPT_URL => $this->url . '/api/v1/courses/' . $courseCode . '/pay',
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $user->getToken()
+            ]
+        );
+        $ch = curl_init();
+        curl_setopt_array($ch, $defaults);
+        $resultJson = curl_exec($ch);
+        if ($resultJson === false) {
+            throw new BillingUnavailableException('Сервис временно недоступен');
+        }
+        curl_close($ch);
+        $result = json_decode($resultJson, true);
+        if (isset($result['code']) && $result['code'] !== Response::HTTP_OK) { //TODO
+            throw new BillingUnavailableException($result['message']);
+        }
+        return $this->serializer->deserialize($resultJson, 'array', 'json');
     }
 }
